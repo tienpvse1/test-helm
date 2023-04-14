@@ -1,0 +1,27 @@
+test:
+  fullname: test-deployment
+  deployment:
+    replica: 1
+    image:
+      name: tienpvse/test-helm
+      pullPolicy: Always
+    port: 3000
+  service:
+    name: test
+    type: NodePort
+
+postgres:
+  fullname: postgres-deployment
+  service: 
+    port: 5432
+    name: postgres
+  deployment:
+    # Never change this variable, or you need to config stateful set
+    replica: 1
+    port: 5432
+    image:
+      name: postgres:14.0-alpine
+      pullPolicy: IfNotPresent
+      env:
+        POSTGRES_DB: db
+        POSTGRES_PASSWORD: password

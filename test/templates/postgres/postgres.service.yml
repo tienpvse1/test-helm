@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.postgres.fullname }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ default 5432 .Values.postgres.service.port }}
+    targetPort: {{ default 5432 .Values.postgres.deployment.port }}
+    protocol: TCP
+    name: {{ .Values.postgres.service.name }}
+  selector:
+    app: {{ .Values.postgres.fullname }}

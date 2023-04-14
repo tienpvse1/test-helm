@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {{ $fullname := .Values.test.fullname }}
+  name: {{ $fullname }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  selector:
+    matchLabels:
+      app: {{ $fullname }}
+  replicas: {{ default 1 .Values.test.deployment.replica | int }}
+  template:
+    metadata:
+      labels:
+        app: {{ $fullname }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.test.deployment.image.name }}"
+        imagePullPolicy: {{ .Values.test.deployment.image.pullPolicy }}
+        env:
+          - name: DB_HOST
+            value: {{ .Values.postgres.fullname }}
+          - name: DB_USER
+            value: postgres
+          - name: DB_PASSWORD
+            value: {{ .Values.postgres.deployment.image.env.POSTGRES_PASSWORD }}
+          - name: DB_NAME
+            value: {{ .Values.postgres.deployment.image.env.POSTGRES_DB }}
+          - name: DB_PORT
+            value: {{ .Values.postgres.service.port | quote}}
+        ports:
+        - containerPort: {{ .Values.test.deployment.port | int }}
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
